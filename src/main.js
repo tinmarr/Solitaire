@@ -1,27 +1,43 @@
-var game = Phaser.Game({
+var game = new Phaser.Game({
     type: Phaser.AUTO,
-    width: 800,
+    width: 600,
     height: 600,
     physics: {
       default: 'arcade',
       arcade: {
-        gravity: { y: 200 },
+        gravity: { y: 0 },
         debug: true
       }
     },
     scene: {
       preload: preload,
       create: create,
-      update: update
     },
-    backgroudColor: 0x000000
+    backgroundColor: 0xffffff
   }),
-  scene;
+  scene,
+  board;
 
-function preload() {}
+function preload() {
+  this.load.image('board', '/assets/img/background.png');
+  this.load.image('piece', '/assets/img/gamepiece.png');
+}
 
 function create() {
   scene = this;
-}
+  board = new Board();
 
-function update() {}
+  scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+    gameObject.x = dragX;
+    gameObject.y = dragY;
+  });
+  scene.input.on('dragend', (pointer, gameObject) => {
+    if (board.isPosEmpty(board.findNearestPos({x: gameObject.x, y: gameObject.y}))){
+      board.getClass(gameObject).pos.ideal = board.findNearestPos({x: gameObject.x, y: gameObject.y});
+      board.getClass(gameObject).calcReal();
+      board.updatePiece(board.getClass(gameObject));
+    } else {
+      board.getClass(gameObject).calcReal();
+    }
+  });
+}
