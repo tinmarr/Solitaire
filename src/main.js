@@ -12,11 +12,13 @@ var game = new Phaser.Game({
     scene: {
       preload: preload,
       create: create,
+      update: update
     },
     backgroundColor: 0xffffff
   }),
   scene,
-  board;
+  board,
+  win;
 
 function preload() {
   this.load.image('board', '/assets/img/background.png');
@@ -32,12 +34,31 @@ function create() {
     gameObject.y = dragY;
   });
   scene.input.on('dragend', (pointer, gameObject) => {
-    if (board.isPosEmpty(board.findNearestPos({x: gameObject.x, y: gameObject.y}))){
-      board.getClass(gameObject).pos.ideal = board.findNearestPos({x: gameObject.x, y: gameObject.y});
+    var newPos = board.findNearestPos({ x: gameObject.x, y: gameObject.y });
+    if (board.isPosEmpty(newPos) && board.isLegalMove(board.getClass(gameObject), newPos)) {
+      var posToDelete = board.getClass(gameObject).pos.ideal.x !== newPos.x ? { x: newPos.x + Math.sign(board.getClass(gameObject).pos.ideal.x - newPos.x), y: newPos.y } : { x: newPos.x, y: newPos.y + Math.sign(board.getClass(gameObject).pos.ideal.y - newPos.y) };
+      board.gamePieceClasses[posToDelete.y * 7 + posToDelete.x].sprite.active = false;
+      board.updatePiece(board.gamePieceClasses[posToDelete.y * 7 + posToDelete.x]);
+
+      board.getClass(gameObject).pos.ideal = newPos;
       board.getClass(gameObject).calcReal();
       board.updatePiece(board.getClass(gameObject));
     } else {
       board.getClass(gameObject).calcReal();
     }
+    if (board.numLeft === 1) {
+      win = true;
+    }
   });
+}
+
+function update() {
+  if (win) {
+    var winType = board.win();
+    board.destroy();
+    var winText = this.add.text(300, 300, 'You win!\nYou got a ' + winType + ' place win!\nReload to play again', { color: '#000', align: 'center' });
+    winText.x = 300 - winText.width / 2;
+    winText.y = 300 - winText.height / 2;
+    win = false;
+  }
 }

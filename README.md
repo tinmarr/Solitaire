@@ -2,6 +2,8 @@
 
 This is a fun little solitaire game.
 
+#### Play the game here: [https://tinmarr.github.io/Solitaire](https://tinmarr.github.io/Solitaire)
+
 # Rules
 
 Rules are from <i>The Book of Classic Board Games</i> by Sid Sackson
@@ -20,7 +22,7 @@ If, however, that last piece is located on the central point, that's a complete 
 
 # Latest Update
 
-v0.1 March 26, 2020
+v1.0 March 26, 2020
 
-- Basic Mechanics
-- Sprites
+- All Mechanics
+- Win Screen

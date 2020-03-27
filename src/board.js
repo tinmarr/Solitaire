@@ -20,12 +20,22 @@ class Board {
       this.gamePieceClasses.push(piece);
       this.gamePieceSprites.push(piece === null ? null : piece.sprite);
     }
+    this.numLeft = 32;
   }
   findNearestPos(pos) {
     return { x: Math.round((pos.x - 54) / 82), y: Math.round((pos.y - 54) / 82) };
   }
   isPosEmpty(pos) {
     return this.gamePieceClasses[pos.y * 7 + pos.x] === null;
+  }
+  isLegalMove(pieceClass, newPos) {
+    if (pieceClass.pos.ideal.x !== newPos.x && pieceClass.pos.ideal.y === newPos.y) {
+      return Math.abs(pieceClass.pos.ideal.x - newPos.x) === 2 && !this.isPosEmpty({ x: newPos.x + Math.sign(pieceClass.pos.ideal.x - newPos.x), y: newPos.y });
+    } else if (pieceClass.pos.ideal.x === newPos.x && pieceClass.pos.ideal.y !== newPos.y) {
+      return Math.abs(pieceClass.pos.ideal.y - newPos.y) === 2 && !this.isPosEmpty({ x: newPos.x, y: newPos.y + Math.sign(pieceClass.pos.ideal.y - newPos.y) });
+    } else {
+      return false;
+    }
   }
   getClass(sprite) {
     return this.gamePieceClasses[this.gamePieceSprites.indexOf(sprite)];
@@ -36,12 +46,31 @@ class Board {
     if (pieceClass.sprite.active) {
       this.gamePieceClasses[pieceClass.pos.ideal.y * 7 + pieceClass.pos.ideal.x] = pieceClass;
       this.gamePieceSprites[pieceClass.pos.ideal.y * 7 + pieceClass.pos.ideal.x] = pieceClass.sprite;
+    } else {
+      pieceClass.sprite.destroy();
+      this.numLeft--;
     }
   }
   destroy() {
-    for (el of this.gamePieceClasses) {
-      el.sprite.destroy();
+    for (var el of this.gamePieceClasses) {
+      if (el !== null) {
+        el.sprite.destroy();
+      }
     }
     this.gamePieceClasses.splice(0, this.gamePieceClasses.length);
+    this.board.destroy();
+  }
+  win() {
+    var goodWin = false;
+    for (var el of this.gamePieceClasses) {
+      if (el !== null && el.pos.ideal.x === 3 && el.pos.ideal.y === 3) {
+        goodWin = true;
+      }
+    }
+    if (goodWin) {
+      return '1st';
+    } else {
+      return '2nd';
+    }
   }
 }

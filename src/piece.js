@@ -14,5 +14,4 @@ class Piece {
     this.pos.real = { x: 54 + this.pos.ideal.x * 82, y: 54 + this.pos.ideal.y * 82 };
     this.sprite.setX(this.pos.real.x).setY(this.pos.real.y);
   }
-  destroy() {}
 }
