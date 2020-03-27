@@ -21,8 +21,8 @@ var game = new Phaser.Game({
   win;
 
 function preload() {
-  this.load.image('board', '/assets/img/background.png');
-  this.load.image('piece', '/assets/img/gamepiece.png');
+  this.load.image('board', './assets/img/background.png');
+  this.load.image('piece', './assets/img/gamepiece.png');
 }
 
 function create() {
